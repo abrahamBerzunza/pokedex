@@ -1,4 +1,10 @@
-# pokedex
+# Pokedex
+
+## Technologies
+
+* Vue.js
+* Node.js
+* [Plapy Platform](https://plapy.soldai.com/)
 
 ## Project setup
 ```
@@ -15,15 +21,8 @@ yarn run serve
 yarn run build
 ```
 
-### Run your tests
+### Run for production
 ```
-yarn run test
-```
-
-### Lints and fixes files
-```
-yarn run lint
+yarn start
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
