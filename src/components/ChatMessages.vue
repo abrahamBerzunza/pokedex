@@ -1,6 +1,6 @@
 <template>
   <div class="chatmessage" v-bind:class="from">
-    <p>{{ message }}</p>
+    <p v-html="message"></p>
   </div>
 </template>
 
