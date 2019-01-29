@@ -19,6 +19,10 @@ import axios from 'axios'
 import uuidv1 from 'uuid/v1'
 import ChatMessages from './ChatMessages'
 
+// Contants
+const BOT = 'bot'
+const ME = 'me'
+
 export default {
   name: 'Chatbox',
   components: {
@@ -30,22 +34,20 @@ export default {
       text: '',
       isActive: false,
       isDisabled: true,
-      intent: '',
       sessionId: '',
-      pokemons: []
     }
   },
   mounted () {
     this.sessionId = uuidv1()
   },
+  updated () {
+    this.scrollToBottom()
+    this.disableForm()
+  },
   methods: {
     onSubmit () {
       if (this.text !== '') {
-        this.messages.push({
-          date: new Date() + '',
-          content: this.text,
-          from: 'me'
-        })
+        this.addMessageToList(this.text, ME)
 
         axios.get('/api/soldai', {
           params: {
@@ -53,28 +55,59 @@ export default {
             sessionId: this.sessionId
           }
         })
-          .then(res => {
-            // let data = res.data.current_response
-            // this.messages.push({
-            //   date: new Date(),
-            //   content: data.message,
-            //   from: 'bot'
-            // })
-            // // check if the question has pokemons
-            // if (Object.keys(data.parameters).length !== 0) {
-            //   this.intent = data.intent_info.name
-            //   this.pokemons = data.parameters.entities
-            //   this.getPokeinformation()
-            // }
-          })
-          .catch(err => {
-            // eslint-disable-next-line
-            console.log('Error in api/soldai', err)
-          })
+        .then(res => {
+          const data = res.data.current_response
+
+          if (data.messages.length > 0) {
+            data.messages.forEach(message => {
+              this.addMessageToList(message.text, BOT)
+            })
+          } else {
+            this.addMessageToList(data.message, BOT)
+          }
+          
+          // check if the question has pokemons
+          if (data.parameters.entities) {
+            const pokemons = data.parameters.entities
+            const intent = data.intent_info.name
+
+            pokemons.forEach(pokemon => {
+              this.getPokeinformation(pokemon.name, intent)
+            })
+          }
+        })
+        .catch(err => {
+          // eslint-disable-next-line
+          console.log('Error in api/soldai', err)
+          alert('Ha ocurrido un error')
+        })
 
         // Clear input message
         this.text = ''
       }
+    },
+    addMessageToList (message, from) {
+      this.messages.push({
+        date: uuidv1(),
+        content: message,
+        from
+      })
+    },
+    getPokeinformation (pokemon, intent) {
+      axios.get('/pokeapi', {
+        params: {
+          pokemon,
+          intent
+        }
+      })
+      .then(res => {
+        this.addMessageToList(res.data.message, BOT)
+      })
+      .catch(err => {
+        // eslint-disable-next-line
+        console.log('error in /pokeapi', err)
+        alert('Ha ocurrido un error')
+      })
     },
     scrollToBottom () {
       let scrollLine = document.querySelector('.chatbox-message_line')
@@ -88,30 +121,7 @@ export default {
         this.isActive = false
         this.isDisabled = true
       }
-    },
-    getPokeinformation () {
-      axios.get('/pokeapi', {
-        params: {
-          pokemons: this.pokemons[0].name,
-          intent: this.intent
-        }
-      })
-        .then(res => {
-          this.messages.push({
-            date: new Date(),
-            content: res.data,
-            from: 'bot'
-          })
-        })
-        .catch(err => {
-          // eslint-disable-next-line
-          console.log('error in /pokeapi', err)
-        })
     }
-  },
-  updated () {
-    this.scrollToBottom()
-    this.disableForm()
   }
 }
 </script>
