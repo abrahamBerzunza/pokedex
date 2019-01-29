@@ -32,18 +32,19 @@ app.get('/api/soldai', (req, res) => {
       log: 1
     }
   })
-    .then(response => {
-      res.status(200).json(response.data)
-    })
-    .catch(err => {
-      console.log(err)
-      return res.status(500).json({ message: 'Internal Server Error' })
-    })
+  .then(response => {
+    res.status(200).json(response.data)
+  })
+  .catch(err => {
+    console.log(err)
+    return res.status(500).json({ message: 'Internal Server Error' })
+  })
 })
 
 app.get('/pokeapi', (req, res) => {
-  const baseURL = `https://pokeapi.co/api/v2/pokemon/${req.query.pokemon}`
-  let intent = req.body.intent
+  const pokemon = req.query.pokemon
+  let intent = req.query.intent
+  const baseURL = `https://pokeapi.co/api/v2/pokemon/${pokemon}`
 
   axios.get(baseURL)
     .then(response => {
@@ -53,34 +54,34 @@ app.get('/pokeapi', (req, res) => {
           abilities = abilities.map(ability => {
             return ability.ability.name
           })
-        return res.status(200).json(`Sus habilidades son ${abilities.join()}`)
+        return res.status(200).json({ message: `Las habilidades de ${pokemon} son ${abilities.join()}`} )
 
         case 'estadisticas':
           let stats = response.data.stats
           stats = stats.map(stat => {
             return stat.stat.name + '-' + stat.base_stat
           })
-        return res.status(200).json(`Sus estadísticas son ${stats.join()}`)
+        return res.status(200).json({ message: `Las estadísticas de ${pokemon} son ${stats.join()}` })
 
         case 'movimientos':
           let moves = response.data.moves
           moves = moves.map(move => {
             return move.move.name
           })
-        return res.status(200).json(`Sus movimientos son ${moves.join()}`)
+        return res.status(200).json({ message: `Los movimientos de ${pokemon} son ${moves.join()}` })
 
         case 'peso':
-        return res.status(200).json(`Su peso es ${response.data.weight}`)
+        return res.status(200).json({ message: `El peso de ${pokemon} es ${response.data.weight}` })
 
         case 'altura':
-        return res.status(200).json(`Su altura es ${response.data.height}`)
+        return res.status(200).json({ message: `La altura de ${pokemon} es ${response.data.height}` })
 
         case 'tipos':
           let types = response.data.types
           types = types.map(type => {
             return type.type.name
           })
-        return res.status(200).json(`Es de tipo ${types.join()}`)
+        return res.status(200).json({ message: `El tipo de ${pokemon} es ${types.join()}` })
       }
     })
     .catch(err => {
