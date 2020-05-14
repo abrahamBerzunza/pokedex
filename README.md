@@ -1,4 +1,7 @@
 # Pokedex
+Chatbot based on pokémon 
+
+![pokedex](preview.png)
 
 ## Technologies
 
@@ -6,23 +9,16 @@
 * Node.js
 * [Plapy Platform](https://plapy.soldai.com/)
 
-## Project setup
-```
-yarn install
-```
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
+## Run the project
 
-### Compiles and minifies for production
-```
-yarn run build
-```
+1. Run express server
+    ```bash
+      yarn run dev
+    ```
 
-### Run for production
-```
-yarn start
-```
+2. Run vue client
+    ```bash
+      yarn run serve
+    ```
 
